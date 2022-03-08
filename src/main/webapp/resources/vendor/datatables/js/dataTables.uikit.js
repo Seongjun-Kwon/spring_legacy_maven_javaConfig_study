@@ -1,19 +1,13 @@
-/*! DataTables Bootstrap 3 integration
- * ©2011-2015 SpryMedia Ltd - datatables.net/license
+/*! DataTables UIkit 3 integration
  */
 
 /**
- * DataTables integration for Bootstrap 3. This requires Bootstrap 3 and
- * DataTables 1.10 or newer.
- *
- * This file sets the defaults and adds options to DataTables to style its
- * controls using Bootstrap. See http://datatables.net/manual/styling/bootstrap
- * for further information.
+ * This is a tech preview of UIKit integration with DataTables.
  */
 (function( factory ){
 	if ( typeof define === 'function' && define.amd ) {
 		// AMD
-		define( ['jquery', 'datatables.net'], function ( $ ) {
+		define( ['src/main/webapp/resources/vendor/datatables/js/jquery', 'datatables.net'], function ($ ) {
 			return factory( $, window, document );
 		} );
 	}
@@ -46,32 +40,24 @@ var DataTable = $.fn.dataTable;
 /* Set the defaults for DataTables initialisation */
 $.extend( true, DataTable.defaults, {
 	dom:
-		"<'mdl-grid'"+
-			"<'mdl-cell mdl-cell--6-col'l>"+
-			"<'mdl-cell mdl-cell--6-col'f>"+
-		">"+
-		"<'mdl-grid dt-table'"+
-			"<'mdl-cell mdl-cell--12-col'tr>"+
-		">"+
-		"<'mdl-grid'"+
-			"<'mdl-cell mdl-cell--4-col'i>"+
-			"<'mdl-cell mdl-cell--8-col'p>"+
-		">",
-	renderer: 'material'
+		"<'row uk-grid'<'uk-width-1-2'l><'uk-width-1-2'f>>" +
+		"<'row uk-grid dt-merge-grid'<'uk-width-1-1'tr>>" +
+		"<'row uk-grid dt-merge-grid'<'uk-width-2-5'i><'uk-width-3-5'p>>",
+	renderer: 'uikit'
 } );
 
 
 /* Default class modification */
 $.extend( DataTable.ext.classes, {
-	sWrapper:      "dataTables_wrapper form-inline dt-material",
-	sFilterInput:  "form-control input-sm",
-	sLengthSelect: "form-control input-sm",
-	sProcessing:   "dataTables_processing panel panel-default"
+	sWrapper:      "dataTables_wrapper uk-form dt-uikit",
+	sFilterInput:  "uk-form-small",
+	sLengthSelect: "uk-form-small",
+	sProcessing:   "dataTables_processing uk-panel"
 } );
 
 
-/* Bootstrap paging button renderer */
-DataTable.ext.renderer.pageButton.material = function ( settings, host, idx, buttons, page, pages ) {
+/* UIkit paging button renderer */
+DataTable.ext.renderer.pageButton.uikit = function ( settings, host, idx, buttons, page, pages ) {
 	var api     = new DataTable.Api( settings );
 	var classes = settings.oClasses;
 	var lang    = settings.oLanguage.oPaginate;
@@ -79,7 +65,7 @@ DataTable.ext.renderer.pageButton.material = function ( settings, host, idx, but
 	var btnDisplay, btnClass, counter=0;
 
 	var attach = function( container, buttons ) {
-		var i, ien, node, button, disabled, active;
+		var i, ien, node, button;
 		var clickHandler = function ( e ) {
 			e.preventDefault();
 			if ( !$(e.currentTarget).hasClass('disabled') && api.page() != e.data.action ) {
@@ -95,62 +81,61 @@ DataTable.ext.renderer.pageButton.material = function ( settings, host, idx, but
 			}
 			else {
 				btnDisplay = '';
-				active = false;
+				btnClass = '';
 
 				switch ( button ) {
 					case 'ellipsis':
-						btnDisplay = '&#x2026;';
-						btnClass = 'disabled';
+						btnDisplay = '<i class="uk-icon-ellipsis-h"></i>';
+						btnClass = 'uk-disabled disabled';
 						break;
 
 					case 'first':
-						btnDisplay = lang.sFirst;
-						btnClass = button + (page > 0 ?
-							'' : ' disabled');
+						btnDisplay = '<i class="uk-icon-angle-double-left"></i> ' + lang.sFirst;
+						btnClass = (page > 0 ?
+							'' : ' uk-disabled disabled');
 						break;
 
 					case 'previous':
-						btnDisplay = lang.sPrevious;
-						btnClass = button + (page > 0 ?
-							'' : ' disabled');
+						btnDisplay = '<i class="uk-icon-angle-left"></i> ' + lang.sPrevious;
+						btnClass = (page > 0 ?
+							'' : 'uk-disabled disabled');
 						break;
 
 					case 'next':
-						btnDisplay = lang.sNext;
-						btnClass = button + (page < pages-1 ?
-							'' : ' disabled');
+						btnDisplay = lang.sNext + ' <i class="uk-icon-angle-right"></i>';
+						btnClass = (page < pages-1 ?
+							'' : 'uk-disabled disabled');
 						break;
 
 					case 'last':
-						btnDisplay = lang.sLast;
-						btnClass = button + (page < pages-1 ?
-							'' : ' disabled');
+						btnDisplay = lang.sLast + ' <i class="uk-icon-angle-double-right"></i>';
+						btnClass = (page < pages-1 ?
+							'' : ' uk-disabled disabled');
 						break;
 
 					default:
 						btnDisplay = button + 1;
-						btnClass = '';
-						active = page === button;
+						btnClass = page === button ?
+							'uk-active' : '';
 						break;
 				}
 
-				if ( active ) {
-					btnClass += ' mdl-button--raised mdl-button--colored';
-				}
-
 				if ( btnDisplay ) {
-					node = $('<button>', {
-							'class': 'mdl-button '+btnClass,
+					node = $('<li>', {
+							'class': classes.sPageButton+' '+btnClass,
 							'id': idx === 0 && typeof button === 'string' ?
 								settings.sTableId +'_'+ button :
-								null,
-							'aria-controls': settings.sTableId,
-							'aria-label': aria[ button ],
-							'data-dt-idx': counter,
-							'tabindex': settings.iTabIndex,
-							'disabled': btnClass.indexOf('disabled') !== -1
+								null
 						} )
-						.html( btnDisplay )
+						.append( $(( -1 != btnClass.indexOf('disabled') || -1 != btnClass.indexOf('active') ) ? '<span>' : '<a>', {
+								'href': '#',
+								'aria-controls': settings.sTableId,
+								'aria-label': aria[ button ],
+								'data-dt-idx': counter,
+								'tabindex': settings.iTabIndex
+							} )
+							.html( btnDisplay )
+						)
 						.appendTo( container );
 
 					settings.oApi._fnBindAction(
@@ -177,7 +162,7 @@ DataTable.ext.renderer.pageButton.material = function ( settings, host, idx, but
 	catch (e) {}
 
 	attach(
-		$(host).empty().html('<div class="pagination"/>').children(),
+		$(host).empty().html('<ul class="uk-pagination uk-pagination-right"/>').children('ul'),
 		buttons
 	);
 

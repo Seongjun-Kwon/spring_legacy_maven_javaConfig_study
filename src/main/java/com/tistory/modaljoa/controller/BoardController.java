@@ -2,6 +2,7 @@ package com.tistory.modaljoa.controller;
 
 import com.tistory.modaljoa.domain.BoardVO;
 import com.tistory.modaljoa.domain.Criteria;
+import com.tistory.modaljoa.domain.PageDTO;
 import com.tistory.modaljoa.service.BoardService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -22,11 +23,17 @@ public class BoardController {
     private BoardService service;
 
     @GetMapping("/list")
-    public void list(Model model, Criteria cri) {
+    public void list(Criteria cri, Model model) {
 
-        log.info("list: "+ cri);
+        log.info("list: " + cri);
 
         model.addAttribute("list", service.getList(cri));
+
+        int total = service.getTotal(cri);
+
+        log.info("total: " + total);
+
+        model.addAttribute("pageMaker", new PageDTO(cri, total));
     }
 
     @GetMapping("/register")
