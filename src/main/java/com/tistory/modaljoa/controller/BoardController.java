@@ -1,6 +1,7 @@
 package com.tistory.modaljoa.controller;
 
 import com.tistory.modaljoa.domain.BoardVO;
+import com.tistory.modaljoa.domain.Criteria;
 import com.tistory.modaljoa.service.BoardService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -21,11 +22,11 @@ public class BoardController {
     private BoardService service;
 
     @GetMapping("/list")
-    public void list(Model model) {
+    public void list(Model model, Criteria cri) {
 
-        log.info("list");
+        log.info("list: "+ cri);
 
-        model.addAttribute("list", service.getList());
+        model.addAttribute("list", service.getList(cri));
     }
 
     @GetMapping("/register")

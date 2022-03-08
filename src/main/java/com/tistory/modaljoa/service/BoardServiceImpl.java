@@ -1,6 +1,7 @@
 package com.tistory.modaljoa.service;
 
 import com.tistory.modaljoa.domain.BoardVO;
+import com.tistory.modaljoa.domain.Criteria;
 import com.tistory.modaljoa.mapper.BoardMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -48,10 +49,10 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public List<BoardVO> getList() {
+    public List<BoardVO> getList(Criteria cri) {
 
         log.info("getList..........");
 
-        return mapper.getList();
+        return mapper.getListWithPaging(cri);
     }
 }

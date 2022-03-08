@@ -1,6 +1,7 @@
 package com.tistory.modaljoa.service;
 
 import com.tistory.modaljoa.domain.BoardVO;
+import com.tistory.modaljoa.domain.Criteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class BoardServiceTests {
     @Test
     public void testGetList() {
 
-        for (BoardVO board : service.getList()) {
+        for (BoardVO board : service.getList(new Criteria(2, 10))) {
             log.info(board);
         }
     }
